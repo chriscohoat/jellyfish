@@ -35,4 +35,36 @@ defmodule Jellyfish.PeerMessage do
     oneof: 0
 
   field :media_event, 3, type: Jellyfish.PeerMessage.MediaEvent, json_name: "mediaEvent", oneof: 0
+
+  def to_map(message) do
+    # To support Unity, we need to convert the protobuf message to a map
+    case message.content do
+      {:authenticated, auth} ->
+        %{
+          content: :authenticated,
+          authenticated:
+            %{
+              # Add necessary fields from auth
+            }
+        }
+
+      {:auth_request, auth_req} ->
+        %{
+          content: :auth_request,
+          auth_request: %{
+            token: auth_req.token
+          }
+        }
+
+      {:media_event, media_event} ->
+        %{
+          content: :media_event,
+          media_event: %{
+            data: media_event.data
+          }
+        }
+
+        # Handle other cases as necessary
+    end
+  end
 end

@@ -17,8 +17,19 @@ defmodule JellyfishWeb.PeerSocket do
   @impl true
   def connect(state) do
     Logger.info("New incoming peer WebSocket connection, accepting")
+    IO.inspect(state)
+    # Make sure the return format is either "binary" or "text"
 
-    {:ok, state}
+    return_format =
+      with return_format <- state.params |> Map.get("return_format", "binary") do
+        case return_format do
+          "binary" -> :binary
+          "text" -> :text
+          _ -> :binary
+        end
+      end
+
+    {:ok, state |> Map.put(:return_format, return_format)}
   end
 
   @impl true
@@ -36,8 +47,8 @@ defmodule JellyfishWeb.PeerSocket do
              :ok <- Phoenix.PubSub.subscribe(Jellyfish.PubSub, room_id) do
           Process.send_after(self(), :send_ping, @heartbeat_interval)
 
-          encoded_message =
-            PeerMessage.encode(%PeerMessage{content: {:authenticated, %Authenticated{}}})
+          response_message = %PeerMessage{content: {:authenticated, %Authenticated{}}}
+          encoded_message = PeerMessage.encode(response_message)
 
           state =
             state
@@ -50,7 +61,15 @@ defmodule JellyfishWeb.PeerSocket do
 
           Event.broadcast_server_notification({:peer_connected, room_id, peer_id})
 
-          {:reply, :ok, {:binary, encoded_message}, state}
+          if state.return_format == :text do
+            # Just send the response message as is, without protobuf encoding
+            # This is to support Unity right now.
+            response_map = Jellyfish.PeerMessage.to_map(response_message)
+            json_response = Jason.encode!(response_map)
+            {:reply, :ok, {:text, json_response}, state}
+          else
+            {:reply, :ok, {:binary, encoded_message}, state}
+          end
         else
           {:error, reason} ->
             reason = reason_to_string(reason)
@@ -101,10 +120,26 @@ defmodule JellyfishWeb.PeerSocket do
 
   @impl true
   def handle_info({:media_event, data}, state) when is_binary(data) do
-    encoded_message =
-      PeerMessage.encode(%PeerMessage{content: {:media_event, %MediaEvent{data: data}}})
+    peer_message = %PeerMessage{content: {:media_event, %MediaEvent{data: data}}}
+    encoded_message = PeerMessage.encode(peer_message)
 
-    {:push, {:binary, encoded_message}, state}
+    IO.puts("Sending back:")
+    IO.inspect(peer_message)
+    IO.inspect(encoded_message)
+    IO.inspect(encoded_message |> byte_size())
+    IO.puts("Returning format: #{state.return_format}")
+
+    # {:push, {:binary, encoded_message}, state}
+
+    if state.return_format == :text do
+      # Just send the response message as is, without protobuf encoding
+      # This is to support Unity right now.
+      response_map = Jellyfish.PeerMessage.to_map(peer_message)
+      json_response = Jason.encode!(response_map)
+      {:push, {:text, json_response}, state}
+    else
+      {:push, {:binary, encoded_message}, state}
+    end
   end
 
   @impl true

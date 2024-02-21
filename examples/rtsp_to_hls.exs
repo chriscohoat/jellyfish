@@ -38,6 +38,11 @@ defmodule Example do
 end
 
 case System.argv() do
-  [stream_uri | _rest] -> Example.run(stream_uri)
-  _empty -> raise("No stream URI specified, make sure you pass it as the argument to this script")
+  [stream_uri | _rest] ->
+    Example.run(stream_uri)
+
+  _empty ->
+    raise(
+      "No stream URI specified, make sure you pass it as the argument to this script. For example `mix run examples/rtsp_to_hls.exs rtsp://localhost:8554/stream`"
+    )
 end

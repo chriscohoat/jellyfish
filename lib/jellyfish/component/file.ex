@@ -65,7 +65,11 @@ defmodule Jellyfish.Component.File do
       |> Path.join(@files_location)
       |> Path.expand()
 
+    IO.puts("!base path: #{base_path}")
+
     file_path = expand_file_path(file_path)
+
+    IO.puts("!file path: #{file_path}")
 
     cond do
       not PathValidation.inside_directory?(file_path, base_path) -> {:error, :invalid_file_path}

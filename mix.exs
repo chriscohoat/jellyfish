@@ -67,6 +67,12 @@ defmodule Jellyfish.MixProject do
       # protobuf deps
       {:protobuf, "~> 0.12.0"},
 
+      # sippet deps
+      # {:sippet, "~> 1.0"},
+      # {:sippet, github: "balena/elixir-sippet", sparse: "master", override: true},
+
+      {:sippet, "~> 1.0.11"},
+
       # Membrane deps
       {:membrane_rtc_engine,
        github: "jellyfish-dev/membrane_rtc_engine", sparse: "engine", override: true},
