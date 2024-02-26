@@ -17,8 +17,9 @@ defmodule JellyfishWeb.PeerSocket do
   @impl true
   def connect(state) do
     Logger.info("New incoming peer WebSocket connection, accepting")
-    IO.inspect(state)
-    # Make sure the return format is either "binary" or "text"
+
+    # Right now Unity doesn't quite work with binary messages, so we need to
+    # support text messages as well. This is a temporary solution.
 
     return_format =
       with return_format <- state.params |> Map.get("return_format", "binary") do
@@ -123,13 +124,9 @@ defmodule JellyfishWeb.PeerSocket do
     peer_message = %PeerMessage{content: {:media_event, %MediaEvent{data: data}}}
     encoded_message = PeerMessage.encode(peer_message)
 
+    IO.puts("Received media event from #{inspect(state.peer_id)}")
     IO.puts("Sending back:")
     IO.inspect(peer_message)
-    IO.inspect(encoded_message)
-    IO.inspect(encoded_message |> byte_size())
-    IO.puts("Returning format: #{state.return_format}")
-
-    # {:push, {:binary, encoded_message}, state}
 
     if state.return_format == :text do
       # Just send the response message as is, without protobuf encoding

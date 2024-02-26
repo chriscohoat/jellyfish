@@ -4,7 +4,7 @@ Mix.install([
   {:jellyfish_server_sdk, github: "jellyfish-dev/elixir_server_sdk"}
 ])
 
-defmodule RoomToFile do
+defmodule SendFileToRoom do
   require Logger
 
   @jellyfish_hostname "localhost"
@@ -39,7 +39,7 @@ case System.argv() do
   [room_id | rest] ->
     case rest do
       [load_file_from_path | _rest] ->
-        RoomToFile.run(room_id, load_file_from_path)
+        SendFileToRoom.run(room_id, load_file_from_path)
 
       _empty ->
         raise(

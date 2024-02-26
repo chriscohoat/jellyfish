@@ -152,6 +152,8 @@ defmodule Jellyfish.Room do
 
   @spec receive_media_event(id(), Peer.id(), String.t()) :: :ok
   def receive_media_event(room_id, peer_id, event) do
+    IO.puts("...Received media event from peer: #{peer_id}")
+    IO.inspect(event)
     GenServer.cast(registry_id(room_id), {:media_event, peer_id, event})
   end
 

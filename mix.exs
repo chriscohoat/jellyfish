@@ -74,19 +74,12 @@ defmodule Jellyfish.MixProject do
       {:sippet, "~> 1.0.11"},
 
       # Membrane deps
-      {:membrane_rtc_engine,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "engine", override: true},
-      {:membrane_rtc_engine_webrtc,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "webrtc", override: true},
-      {:membrane_rtc_engine_hls,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "hls", override: true},
-      {:membrane_rtc_engine_rtsp,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "rtsp", override: true},
-      {:membrane_rtc_engine_file,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "file", override: true},
-      {:membrane_rtc_engine_sip,
-       github: "jellyfish-dev/membrane_rtc_engine", sparse: "sip", override: true},
-      {:membrane_telemetry_metrics, "~> 0.1.0"},
+      {:membrane_rtc_engine, path: "../membrane_rtc_engine/engine", override: true},
+      {:membrane_rtc_engine_webrtc, path: "../membrane_rtc_engine/webrtc", override: true},
+      {:membrane_rtc_engine_hls, path: "../membrane_rtc_engine/hls", override: true},
+      {:membrane_rtc_engine_rtsp, path: "../membrane_rtc_engine/rtsp", override: true},
+      {:membrane_rtc_engine_file, path: "../membrane_rtc_engine/file", override: true},
+      {:membrane_rtc_engine_sip, path: "../membrane_rtc_engine/sip", override: true},
 
       # HLS endpoints deps
       {:membrane_audio_mix_plugin, "~> 0.16.0"},
